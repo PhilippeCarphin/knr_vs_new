@@ -1,0 +1,149 @@
+#+TITLE: Difference between K&R functions and new-style functions
+
+* Intro
+
+This demo comes from a weird bug that was found when a client executable
+called a library function that was changed from old-style declarations like
+
+#+begin_src C
+int mister_float_knr(f)
+    float f;
+{
+    fprintf(stderr, "%s(): f=%f\n", __func__, f);
+}
+#+end_src
+
+to new style declarations like
+
+#+begin_src C
+int mister_float_new(float f)
+{
+    fprintf(stderr, "%s(): f=%f\n", __func__, f);
+}
+#+end_src
+
+* Analysis
+
+We show the preambles, which show what each type of function expects then we
+describe the different calls.
+
+** Functions and their preambles
+
+The preambles differ in terms of what the compiler expects will be passed in
+=xmm0=.
+
+*** K&R style
+
+The K&R-style function expects that the calling code will have passed a double
+into =xmm0= and so it converts it to a float with =cvtsd2ss= (ConVerT Scalar
+Double [precision] to Scalar Single [precision]).
+
+#+begin_src asm
+// K&R-style preamble
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	cvtsd2ss	%xmm0, %xmm0
+	movss	%xmm0, -8(%rbp)
+#+end_src
+
+*** Mix style
+
+The function =mister_float_mix= is the same as =mister_float_knr=.
+
+However we will provide a new-style declaration before calling it.  This will
+cause trouble.
+
+*** New style
+
+The new-style function expects that a float was passed into =xmm0= and so it
+does not do a conversion.
+
+#+begin_src asm
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movss	%xmm0, -4(%rbp)
+#+end_src
+
+** Calling code
+   
+*** Undeclared functions
+
+When the compiler has not seen the declaration of the function, when it sees
+a call that passes a float, it assumes the function takes a double so it
+converts the float to a double using =cvtss2sd= (ConVerT Scalar Single [precision] 2 Scalar
+Double [precision)
+
+#+begin_src asm
+	movss	MY_FLOAT(%rip), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movl	$1, %eax
+	call	mister_float
+#+end_src
+
+#+begin_src asm
+	movss	MY_FLOAT(%rip), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movl	$1, %eax
+	call	mister_float_new
+#+end_src
+
+*** Variadic functions
+
+We use =fprintf= to examine the value of the 'float'.  Single precision
+arguments are always converted to double precision when passed to the =printf=
+family of functions.
+
+*** Declared functions
+    
+When the function declaration is seen by the compiler before the call, the
+compiler simply puts the float into =xmm0=.  If it was a double, it would get
+converted to a float.
+
+#+begin_src asm
+	movss	MY_FLOAT(%rip), %xmm0
+	call	mister_float_decl_new
+#+end_src
+
+#+begin_src asm
+	movss	MY_FLOAT(%rip), %xmm0
+	call	mister_float_mix
+#+end_src
+
+* Results
+
+#+begin_src shell
+make test
+#+end_src
+
+#+RESULT
+: ./main
+: main() :           The true value: 42b1c28f,          MY_FLOAT=88.879997
+: main() : The true value as double: 40563851e0000000, MY_DOUBLE=88.879997
+:       mister_float_knr(): 0x0000000042b1c28f : f=88.879997
+:       mister_float_new(): 0x00000000e0000000 : f=-36893488147419103232.000000
+:  mister_float_new_decl(): 0x0000000042b1c28f : f=88.879997
+:       mister_float_mix(): 0x42b1c28f00000000 : f=0.000000
+
+- The 4 bytes of the float are =0x42b1c28f=
+- The 8 bytes of the float correctly converted to double are =0x40563851e0000000=
+- For the K&R function, the calling code converts the float to double, the
+  function preamble converts it back to float.  The function implementation uses
+  the float, everything is good.
+- For the new function, the calling code, having not seen the declaration
+  converts the float to double, the function preamble does no conversion and the
+  function implementation uses what it things is a float but contains the bits
+  of a double.
+- For the new function with declaration, the calling code passes the float
+  directly, the function uses the float, everything is good.
+- For the mix function, the function is K&R so its preamble converts a double to
+  a float.  However we provided a new-style declaration to the calling code.
+  therefore the calling code passes the float directly, the function preamble
+  converts what it thinks is a double to a float.
+  
+It would seem like we are purposely trying to trick the compiler with the mix
+function but K&R style declarations don't exist.  But it is quite plausible
+that someone might be trying to get rid of =implicit-function-declaration=
+warnings by adding the equivalent new-style declaration for a new-style
+function.
