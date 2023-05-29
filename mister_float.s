@@ -1,330 +1,307 @@
-	.section	__TEXT,__text,regular,pure_instructions
-	.build_version macos, 11, 3	sdk_version 11, 3
-	.section	__TEXT,__literal8,8byte_literals
-	.p2align	3                               ; -- Begin function mister_float_knr
-lCPI0_0:
-	.quad	0x3f847ae147ae147b              ; double 0.01
-lCPI0_1:
-	.quad	0x40563851eb851eb8              ; double 88.879999999999995
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_mister_float_knr
-	.p2align	2
-_mister_float_knr:                      ; @mister_float_knr
+	.file	"mister_float.c"
+	.text
+	.section	.rodata
+.LC0:
+	.string	"%22s(): "
+.LC4:
+	.string	"\033[32m"
+.LC5:
+	.string	"\033[31m"
+.LC6:
+	.string	"0x%016lx : f=%f\033[0m\n"
+	.text
+	.globl	mister_float_knr
+	.type	mister_float_knr, @function
+mister_float_knr:
+.LFB0:
 	.cfi_startproc
-; %bb.0:
-	sub	sp, sp, #64                     ; =64
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48                    ; =48
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	adrp	x8, ___stderrp@GOTPAGE
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-	fcvt	s1, d0
-	stur	s1, [x29, #-4]
-	ldur	x9, [x29, #-4]
-	stur	x9, [x29, #-16]
-	ldr	x0, [x8]
-	adrp	x1, l_.str@PAGE
-	add	x1, x1, l_.str@PAGEOFF
-	mov	x9, sp
-	adrp	x10, l___func__.mister_float_knr@PAGE
-	add	x10, x10, l___func__.mister_float_knr@PAGEOFF
-	str	x10, [x9]
-	str	x8, [sp, #24]                   ; 8-byte Folded Spill
-	bl	_fprintf
-	ldur	s1, [x29, #-4]
-	fcvt	d0, s1
-	adrp	x8, lCPI0_1@PAGE
-	ldr	d2, [x8, lCPI0_1@PAGEOFF]
-	fabd	d0, d0, d2
-	adrp	x8, lCPI0_0@PAGE
-	ldr	d2, [x8, lCPI0_0@PAGEOFF]
-	fcmp	d0, d2
-	cset	w11, mi
-	tbnz	w11, #0, LBB0_1
-	b	LBB0_2
-LBB0_1:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.1@PAGE
-	add	x1, x1, l_.str.1@PAGEOFF
-	bl	_fprintf
-	b	LBB0_3
-LBB0_2:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.2@PAGE
-	add	x1, x1, l_.str.2@PAGEOFF
-	bl	_fprintf
-LBB0_3:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	ldur	x9, [x29, #-16]
-	ldur	s0, [x29, #-4]
-	fcvt	d1, s0
-	adrp	x1, l_.str.3@PAGE
-	add	x1, x1, l_.str.3@PAGEOFF
-	mov	x10, sp
-	str	x9, [x10]
-	str	d1, [x10, #8]
-	bl	_fprintf
-	mov	w11, #0
-	mov	x0, x11
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	add	sp, sp, #64                     ; =64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	cvtsd2ss	%xmm0, %xmm0
+	movss	%xmm0, -24(%rbp)
+	leaq	-24(%rbp), %rax
+	movq	(%rax), %rax
+	movq	%rax, -8(%rbp)
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	leaq	__func__.3415(%rip), %rdx
+	leaq	.LC0(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	fprintf@PLT
+	movss	-24(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movsd	.LC1(%rip), %xmm1
+	subsd	%xmm1, %xmm0
+	movq	.LC2(%rip), %xmm1
+	andpd	%xmm0, %xmm1
+	movsd	.LC3(%rip), %xmm0
+	comisd	%xmm1, %xmm0
+	jbe	.L7
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC4(%rip), %rdi
+	call	fwrite@PLT
+	jmp	.L4
+.L7:
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC5(%rip), %rdi
+	call	fwrite@PLT
+.L4:
+	movss	-24(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	-8(%rbp), %rdx
+	leaq	.LC6(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$1, %eax
+	call	fprintf@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-                                        ; -- End function
-	.section	__TEXT,__literal8,8byte_literals
-	.p2align	3                               ; -- Begin function mister_float_mix
-lCPI1_0:
-	.quad	0x3f847ae147ae147b              ; double 0.01
-lCPI1_1:
-	.quad	0x40563851eb851eb8              ; double 88.879999999999995
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_mister_float_mix
-	.p2align	2
-_mister_float_mix:                      ; @mister_float_mix
+.LFE0:
+	.size	mister_float_knr, .-mister_float_knr
+	.globl	mister_float_mix
+	.type	mister_float_mix, @function
+mister_float_mix:
+.LFB1:
 	.cfi_startproc
-; %bb.0:
-	sub	sp, sp, #64                     ; =64
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48                    ; =48
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	adrp	x8, ___stderrp@GOTPAGE
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-	fcvt	s1, d0
-	stur	s1, [x29, #-4]
-	ldur	x9, [x29, #-4]
-	stur	x9, [x29, #-16]
-	ldr	x0, [x8]
-	adrp	x1, l_.str@PAGE
-	add	x1, x1, l_.str@PAGEOFF
-	mov	x9, sp
-	adrp	x10, l___func__.mister_float_mix@PAGE
-	add	x10, x10, l___func__.mister_float_mix@PAGEOFF
-	str	x10, [x9]
-	str	x8, [sp, #24]                   ; 8-byte Folded Spill
-	bl	_fprintf
-	ldur	s1, [x29, #-4]
-	fcvt	d0, s1
-	adrp	x8, lCPI1_1@PAGE
-	ldr	d2, [x8, lCPI1_1@PAGEOFF]
-	fabd	d0, d0, d2
-	adrp	x8, lCPI1_0@PAGE
-	ldr	d2, [x8, lCPI1_0@PAGEOFF]
-	fcmp	d0, d2
-	cset	w11, mi
-	tbnz	w11, #0, LBB1_1
-	b	LBB1_2
-LBB1_1:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.1@PAGE
-	add	x1, x1, l_.str.1@PAGEOFF
-	bl	_fprintf
-	b	LBB1_3
-LBB1_2:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.2@PAGE
-	add	x1, x1, l_.str.2@PAGEOFF
-	bl	_fprintf
-LBB1_3:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	ldur	x9, [x29, #-16]
-	ldur	s0, [x29, #-4]
-	fcvt	d1, s0
-	adrp	x1, l_.str.3@PAGE
-	add	x1, x1, l_.str.3@PAGEOFF
-	mov	x10, sp
-	str	x9, [x10]
-	str	d1, [x10, #8]
-	bl	_fprintf
-	mov	w11, #0
-	mov	x0, x11
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	add	sp, sp, #64                     ; =64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	cvtsd2ss	%xmm0, %xmm0
+	movss	%xmm0, -24(%rbp)
+	leaq	-24(%rbp), %rax
+	movq	(%rax), %rax
+	movq	%rax, -8(%rbp)
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	leaq	__func__.3420(%rip), %rdx
+	leaq	.LC0(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	fprintf@PLT
+	movss	-24(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movsd	.LC1(%rip), %xmm1
+	subsd	%xmm1, %xmm0
+	movq	.LC2(%rip), %xmm1
+	andpd	%xmm0, %xmm1
+	movsd	.LC3(%rip), %xmm0
+	comisd	%xmm1, %xmm0
+	jbe	.L14
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC4(%rip), %rdi
+	call	fwrite@PLT
+	jmp	.L11
+.L14:
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC5(%rip), %rdi
+	call	fwrite@PLT
+.L11:
+	movss	-24(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	-8(%rbp), %rdx
+	leaq	.LC6(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$1, %eax
+	call	fprintf@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-                                        ; -- End function
-	.section	__TEXT,__literal8,8byte_literals
-	.p2align	3                               ; -- Begin function mister_float_new
-lCPI2_0:
-	.quad	0x3f847ae147ae147b              ; double 0.01
-lCPI2_1:
-	.quad	0x40563851eb851eb8              ; double 88.879999999999995
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_mister_float_new
-	.p2align	2
-_mister_float_new:                      ; @mister_float_new
+.LFE1:
+	.size	mister_float_mix, .-mister_float_mix
+	.globl	mister_float_new
+	.type	mister_float_new, @function
+mister_float_new:
+.LFB2:
 	.cfi_startproc
-; %bb.0:
-	sub	sp, sp, #64                     ; =64
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48                    ; =48
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	adrp	x8, ___stderrp@GOTPAGE
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-	stur	s0, [x29, #-4]
-	ldur	x9, [x29, #-4]
-	stur	x9, [x29, #-16]
-	ldr	x0, [x8]
-	adrp	x1, l_.str@PAGE
-	add	x1, x1, l_.str@PAGEOFF
-	mov	x9, sp
-	adrp	x10, l___func__.mister_float_new@PAGE
-	add	x10, x10, l___func__.mister_float_new@PAGEOFF
-	str	x10, [x9]
-	str	x8, [sp, #24]                   ; 8-byte Folded Spill
-	bl	_fprintf
-	ldur	s0, [x29, #-4]
-	fcvt	d1, s0
-	adrp	x8, lCPI2_1@PAGE
-	ldr	d2, [x8, lCPI2_1@PAGEOFF]
-	fabd	d1, d1, d2
-	adrp	x8, lCPI2_0@PAGE
-	ldr	d2, [x8, lCPI2_0@PAGEOFF]
-	fcmp	d1, d2
-	cset	w11, mi
-	tbnz	w11, #0, LBB2_1
-	b	LBB2_2
-LBB2_1:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.1@PAGE
-	add	x1, x1, l_.str.1@PAGEOFF
-	bl	_fprintf
-	b	LBB2_3
-LBB2_2:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.2@PAGE
-	add	x1, x1, l_.str.2@PAGEOFF
-	bl	_fprintf
-LBB2_3:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	ldur	x9, [x29, #-16]
-	ldur	s0, [x29, #-4]
-	fcvt	d1, s0
-	adrp	x1, l_.str.3@PAGE
-	add	x1, x1, l_.str.3@PAGEOFF
-	mov	x10, sp
-	str	x9, [x10]
-	str	d1, [x10, #8]
-	bl	_fprintf
-	mov	w11, #0
-	mov	x0, x11
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	add	sp, sp, #64                     ; =64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movss	%xmm0, -20(%rbp)
+	leaq	-20(%rbp), %rax
+	movq	(%rax), %rax
+	movq	%rax, -8(%rbp)
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	leaq	__func__.3425(%rip), %rdx
+	leaq	.LC0(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	fprintf@PLT
+	movss	-20(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movsd	.LC1(%rip), %xmm1
+	subsd	%xmm1, %xmm0
+	movq	.LC2(%rip), %xmm1
+	andpd	%xmm0, %xmm1
+	movsd	.LC3(%rip), %xmm0
+	comisd	%xmm1, %xmm0
+	jbe	.L21
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC4(%rip), %rdi
+	call	fwrite@PLT
+	jmp	.L18
+.L21:
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC5(%rip), %rdi
+	call	fwrite@PLT
+.L18:
+	movss	-20(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	-8(%rbp), %rdx
+	leaq	.LC6(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$1, %eax
+	call	fprintf@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-                                        ; -- End function
-	.section	__TEXT,__literal8,8byte_literals
-	.p2align	3                               ; -- Begin function mister_float_new_decl
-lCPI3_0:
-	.quad	0x3f847ae147ae147b              ; double 0.01
-lCPI3_1:
-	.quad	0x40563851eb851eb8              ; double 88.879999999999995
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_mister_float_new_decl
-	.p2align	2
-_mister_float_new_decl:                 ; @mister_float_new_decl
+.LFE2:
+	.size	mister_float_new, .-mister_float_new
+	.globl	mister_float_new_decl
+	.type	mister_float_new_decl, @function
+mister_float_new_decl:
+.LFB3:
 	.cfi_startproc
-; %bb.0:
-	sub	sp, sp, #64                     ; =64
-	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
-	add	x29, sp, #48                    ; =48
-	.cfi_def_cfa w29, 16
-	.cfi_offset w30, -8
-	.cfi_offset w29, -16
-	adrp	x8, ___stderrp@GOTPAGE
-	ldr	x8, [x8, ___stderrp@GOTPAGEOFF]
-	stur	s0, [x29, #-4]
-	ldur	x9, [x29, #-4]
-	stur	x9, [x29, #-16]
-	ldr	x0, [x8]
-	adrp	x1, l_.str@PAGE
-	add	x1, x1, l_.str@PAGEOFF
-	mov	x9, sp
-	adrp	x10, l___func__.mister_float_new_decl@PAGE
-	add	x10, x10, l___func__.mister_float_new_decl@PAGEOFF
-	str	x10, [x9]
-	str	x8, [sp, #24]                   ; 8-byte Folded Spill
-	bl	_fprintf
-	ldur	s0, [x29, #-4]
-	fcvt	d1, s0
-	adrp	x8, lCPI3_1@PAGE
-	ldr	d2, [x8, lCPI3_1@PAGEOFF]
-	fabd	d1, d1, d2
-	adrp	x8, lCPI3_0@PAGE
-	ldr	d2, [x8, lCPI3_0@PAGEOFF]
-	fcmp	d1, d2
-	cset	w11, mi
-	tbnz	w11, #0, LBB3_1
-	b	LBB3_2
-LBB3_1:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.1@PAGE
-	add	x1, x1, l_.str.1@PAGEOFF
-	bl	_fprintf
-	b	LBB3_3
-LBB3_2:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	adrp	x1, l_.str.2@PAGE
-	add	x1, x1, l_.str.2@PAGEOFF
-	bl	_fprintf
-LBB3_3:
-	ldr	x8, [sp, #24]                   ; 8-byte Folded Reload
-	ldr	x0, [x8]
-	ldur	x9, [x29, #-16]
-	ldur	s0, [x29, #-4]
-	fcvt	d1, s0
-	adrp	x1, l_.str.3@PAGE
-	add	x1, x1, l_.str.3@PAGEOFF
-	mov	x10, sp
-	str	x9, [x10]
-	str	d1, [x10, #8]
-	bl	_fprintf
-	mov	w11, #0
-	mov	x0, x11
-	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
-	add	sp, sp, #64                     ; =64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movss	%xmm0, -20(%rbp)
+	leaq	-20(%rbp), %rax
+	movq	(%rax), %rax
+	movq	%rax, -8(%rbp)
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	leaq	__func__.3430(%rip), %rdx
+	leaq	.LC0(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	fprintf@PLT
+	movss	-20(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movsd	.LC1(%rip), %xmm1
+	subsd	%xmm1, %xmm0
+	movq	.LC2(%rip), %xmm1
+	andpd	%xmm0, %xmm1
+	movsd	.LC3(%rip), %xmm0
+	comisd	%xmm1, %xmm0
+	jbe	.L28
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC4(%rip), %rdi
+	call	fwrite@PLT
+	jmp	.L25
+.L28:
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	%rax, %rcx
+	movl	$5, %edx
+	movl	$1, %esi
+	leaq	.LC5(%rip), %rdi
+	call	fwrite@PLT
+.L25:
+	movss	-20(%rbp), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movq	stderr@GOTPCREL(%rip), %rax
+	movq	(%rax), %rax
+	movq	-8(%rbp), %rdx
+	leaq	.LC6(%rip), %rsi
+	movq	%rax, %rdi
+	movl	$1, %eax
+	call	fprintf@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-                                        ; -- End function
-	.section	__TEXT,__cstring,cstring_literals
-l_.str:                                 ; @.str
-	.asciz	"%22s(): "
-
-l___func__.mister_float_knr:            ; @__func__.mister_float_knr
-	.asciz	"mister_float_knr"
-
-l_.str.1:                               ; @.str.1
-	.asciz	"\033[32m"
-
-l_.str.2:                               ; @.str.2
-	.asciz	"\033[31m"
-
-l_.str.3:                               ; @.str.3
-	.asciz	"0x%016lx : f=%f\033[0m\n"
-
-l___func__.mister_float_mix:            ; @__func__.mister_float_mix
-	.asciz	"mister_float_mix"
-
-l___func__.mister_float_new:            ; @__func__.mister_float_new
-	.asciz	"mister_float_new"
-
-l___func__.mister_float_new_decl:       ; @__func__.mister_float_new_decl
-	.asciz	"mister_float_new_decl"
-
-.subsections_via_symbols
+.LFE3:
+	.size	mister_float_new_decl, .-mister_float_new_decl
+	.section	.rodata
+	.align 16
+	.type	__func__.3415, @object
+	.size	__func__.3415, 17
+__func__.3415:
+	.string	"mister_float_knr"
+	.align 16
+	.type	__func__.3420, @object
+	.size	__func__.3420, 17
+__func__.3420:
+	.string	"mister_float_mix"
+	.align 16
+	.type	__func__.3425, @object
+	.size	__func__.3425, 17
+__func__.3425:
+	.string	"mister_float_new"
+	.align 16
+	.type	__func__.3430, @object
+	.size	__func__.3430, 22
+__func__.3430:
+	.string	"mister_float_new_decl"
+	.align 8
+.LC1:
+	.long	3951369912
+	.long	1079392337
+	.align 16
+.LC2:
+	.long	4294967295
+	.long	2147483647
+	.long	0
+	.long	0
+	.align 8
+.LC3:
+	.long	1202590843
+	.long	1065646817
+	.ident	"GCC: (GNU) 8.3.1 20191121 (Red Hat 8.3.1-5)"
+	.section	.note.GNU-stack,"",@progbits
