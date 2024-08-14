@@ -49,7 +49,7 @@ def swap_endianness(h):
     if len(h) == 8:
         return h[6:8] + h[4:6] + h[2:4] + h[0:2]
     if len(h) == 16:
-        return = h[14:16] + h[12:14] + h[10:12] + h[8:10] + h[6:8] + h[4:6] + h[2:4] + h[0:2]
+        return h[14:16] + h[12:14] + h[10:12] + h[8:10] + h[6:8] + h[4:6] + h[2:4] + h[0:2]
     raise ValueError("Hex string must be 8 or 16 digits")
 
 def mantissa_to_float(m):
@@ -85,12 +85,15 @@ def test_f(h, swap=False):
 
     repr_float(bits)
 
-test('40563851e0000000') # Correct double representation
-
-test('c400000000000000') # double converted from float to double
-test('00000000e0000000')
-
-test('42b1c28f00000000') # float converted from double to float
-test('0000000000000000')
-test_f('42b1c28f')       # Correct float representation
+# test('40563851e0000000') # Correct double representation
+# 
+# test('c400000000000000') # double converted from float to double
+# test('00000000e0000000')
+# 
+# test('42b1c28f00000000') # float converted from double to float
+# test('0000000000000000')
+# test_f('42b1c28f')       # Correct float representation
 test_f('e0000000')
+test_f('20000000')
+test_f('42b1c28f')
+test('6d632f6442b1c28f')

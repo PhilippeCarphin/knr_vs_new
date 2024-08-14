@@ -1,4 +1,4 @@
 #ifndef VALUE
-#define VALUE 88.88
+#define VALUE -99.99
 #endif
 
